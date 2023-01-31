@@ -45,6 +45,7 @@ class MainWindow(QMainWindow):
         self.sch_btn.clicked.connect(self.set_map_show_mode)
         self.hyb_btn.clicked.connect(self.set_map_show_mode)
         self.search_btn.clicked.connect(self.search)
+        self.reset_btn.clicked.connect(self.reset)
 
         self.refresh_map()
 
@@ -80,6 +81,12 @@ class MainWindow(QMainWindow):
         }
         self.map_ll = list(map(float, get_coords(GEOCODE_API_SERVER, params)))
         self.point_coords = f'{self.map_ll[0]},{self.map_ll[1]},pm2rdl'
+        self.refresh_map()
+
+    def reset(self):
+        self.map_ll = [37.977751, 55.757718]
+        self.point_coords = ''
+        self.search_line.setText('')
         self.refresh_map()
 
     def refresh_map(self):

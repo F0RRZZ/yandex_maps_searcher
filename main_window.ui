@@ -70,7 +70,7 @@
     <property name="geometry">
      <rect>
       <x>370</x>
-      <y>370</y>
+      <y>350</y>
       <width>191</width>
       <height>20</height>
      </rect>
@@ -80,13 +80,26 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>370</y>
+      <y>350</y>
       <width>75</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
      <string>Поиск</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="reset_btn">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>380</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Сбросить</string>
     </property>
    </widget>
   </widget>
