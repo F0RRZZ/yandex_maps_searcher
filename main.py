@@ -31,6 +31,15 @@ class MainWindow(QMainWindow):
 
         self.refresh_map()
 
+    def keyReleaseEvent(self, event):
+        if event.key() == Qt.Key_PageUp and self.map_zoom < 17:
+            self.map_zoom += 1
+            self.press_delta /= 2
+        if event.key() == Qt.Key_PageDown and self.map_zoom > 0:
+            self.map_zoom -= 1
+            self.press_delta *= 2
+        self.refresh_map()
+
     def refresh_map(self):
         params = {
             "z": self.map_zoom,
