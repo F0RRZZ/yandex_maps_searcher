@@ -23,13 +23,23 @@ class MainWindow(QMainWindow):
         uic.loadUi('main_window.ui', self)
         self.setFixedSize(650, 450)
 
-        self.press_delta = 24
+        self.press_delta = 20
         self.map_zoom = 5
         self.map_ll = [37.977751, 55.757718]
         self.map_l = 'map'
         self.map_key = config['API_KEY']
 
         self.refresh_map()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Up and self.map_ll[1] < 90:
+            self.map_ll[1] += self.press_delta
+        if event.key() == Qt.Key_Down and self.map_ll[1] > -90:
+            self.map_ll[1] -= self.press_delta
+        if event.key() == Qt.Key_Right:
+            self.map_ll[0] = self.map_ll[0] + self.press_delta if self.map_ll[0] < 180 else -180
+        if event.key() == Qt.Key_Left:
+            self.map_ll[0] = self.map_ll[0] - self.press_delta if self.map_ll[0] > -180 else 180
 
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_PageUp and self.map_zoom < 17:
