@@ -15,6 +15,17 @@ config = {
     **dotenv_values(".env")
 }
 MAP_API_SERVER = 'https://static-maps.yandex.ru/1.x/'
+GEOCODE_API_SERVER = "http://geocode-maps.yandex.ru/1.x/"
+
+
+def get_coords(request, parametrs=None):
+    if parametrs is None:
+        parametrs = {}
+    resp = requests.get(request, params=parametrs)
+    json_resp = resp.json()
+    coordinates = json_resp["response"]["GeoObjectCollection"]["featureMember"][0] \
+        ["GeoObject"]["Point"]["pos"].split()
+    return coordinates
 
 
 class MainWindow(QMainWindow):
@@ -32,6 +43,7 @@ class MainWindow(QMainWindow):
         self.sat_btn.clicked.connect(self.set_map_show_mode)
         self.sch_btn.clicked.connect(self.set_map_show_mode)
         self.hyb_btn.clicked.connect(self.set_map_show_mode)
+        self.search_btn.clicked.connect(self.search)
 
         self.refresh_map()
 
@@ -55,6 +67,17 @@ class MainWindow(QMainWindow):
     def set_map_show_mode(self):
         mode = self.sender().text()
         self.map_l = 'map' if mode == 'Схема' else 'sat' if mode == 'Спутник' else 'skl'
+        self.refresh_map()
+
+    def search(self):
+        if not self.search_line.text():
+            return
+        params = {
+            "apikey": config['API_KEY'],
+            "geocode": self.search_line.text(),
+            "format": "json"
+        }
+        self.map_ll = list(map(float, get_coords(GEOCODE_API_SERVER, params)))
         self.refresh_map()
 
     def refresh_map(self):
