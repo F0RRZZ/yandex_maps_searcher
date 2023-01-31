@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):
         self.press_delta = 20
         self.map_zoom = 5
         self.map_ll = [37.977751, 55.757718]
+        self.point_coords = ''
         self.map_l = 'map'
         self.map_key = config['API_KEY']
 
@@ -78,6 +79,7 @@ class MainWindow(QMainWindow):
             "format": "json"
         }
         self.map_ll = list(map(float, get_coords(GEOCODE_API_SERVER, params)))
+        self.point_coords = f'{self.map_ll[0]},{self.map_ll[1]},pm2rdl'
         self.refresh_map()
 
     def refresh_map(self):
@@ -85,7 +87,8 @@ class MainWindow(QMainWindow):
             "z": self.map_zoom,
             "ll": f"{self.map_ll[0]},{self.map_ll[1]}",
             "l": self.map_l,
-            "size": "650,450"
+            "size": "650,450",
+            "pt": self.point_coords
         }
         session = requests.Session()
         retry = Retry(total=10, connect=5, backoff_factor=0.5)
