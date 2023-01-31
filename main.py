@@ -29,17 +29,11 @@ class MainWindow(QMainWindow):
         self.map_l = 'map'
         self.map_key = config['API_KEY']
 
-        self.refresh_map()
+        self.sat_btn.clicked.connect(self.set_map_show_mode)
+        self.sch_btn.clicked.connect(self.set_map_show_mode)
+        self.hyb_btn.clicked.connect(self.set_map_show_mode)
 
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Up and self.map_ll[1] < 90:
-            self.map_ll[1] += self.press_delta
-        if event.key() == Qt.Key_Down and self.map_ll[1] > -90:
-            self.map_ll[1] -= self.press_delta
-        if event.key() == Qt.Key_Right:
-            self.map_ll[0] = self.map_ll[0] + self.press_delta if self.map_ll[0] < 180 else -180
-        if event.key() == Qt.Key_Left:
-            self.map_ll[0] = self.map_ll[0] - self.press_delta if self.map_ll[0] > -180 else 180
+        self.refresh_map()
 
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_PageUp and self.map_zoom < 17:
@@ -48,6 +42,19 @@ class MainWindow(QMainWindow):
         if event.key() == Qt.Key_PageDown and self.map_zoom > 0:
             self.map_zoom -= 1
             self.press_delta *= 2
+        if event.key() == Qt.Key_Up and self.map_ll[1] < 90:
+            self.map_ll[1] += self.press_delta
+        if event.key() == Qt.Key_Down and self.map_ll[1] > -90:
+            self.map_ll[1] -= self.press_delta
+        if event.key() == Qt.Key_Right:
+            self.map_ll[0] = self.map_ll[0] + self.press_delta if self.map_ll[0] < 180 else -180
+        if event.key() == Qt.Key_Left:
+            self.map_ll[0] = self.map_ll[0] - self.press_delta if self.map_ll[0] > -180 else 180
+        self.refresh_map()
+
+    def set_map_show_mode(self):
+        mode = self.sender().text()
+        self.map_l = 'map' if mode == 'Схема' else 'sat' if mode == 'Спутник' else 'skl'
         self.refresh_map()
 
     def refresh_map(self):
