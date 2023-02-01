@@ -10,7 +10,6 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from dotenv import dotenv_values
 
-
 config = {
     **dotenv_values(".env")
 }
@@ -18,18 +17,26 @@ MAP_API_SERVER = 'https://static-maps.yandex.ru/1.x/'
 GEOCODE_API_SERVER = "http://geocode-maps.yandex.ru/1.x/"
 
 
-def get_coords(request, parametrs=None):
+def get_coords(parametrs=None):
     if parametrs is None:
         parametrs = {}
-    resp = requests.get(request, params=parametrs)
+    resp = requests.get(GEOCODE_API_SERVER, params=parametrs)
     json_resp = resp.json()
     coordinates = json_resp["response"]["GeoObjectCollection"]["featureMember"][0] \
         ["GeoObject"]["Point"]["pos"].split()
     return coordinates
 
 
-def get_address():
-    pass
+def get_address(coords):
+    params = {
+        "apikey": config['API_KEY'],
+        "geocode": f"{coords[0]},{coords[1]}",
+        "format": "json"
+    }
+    resp = requests.get(GEOCODE_API_SERVER, params=params)
+    json_resp = resp.json()
+    return json_resp['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty'] \
+        ['GeocoderMetaData']['text']
 
 
 class MainWindow(QMainWindow):
@@ -88,7 +95,9 @@ class MainWindow(QMainWindow):
             "geocode": self.search_line.text(),
             "format": "json"
         }
-        self.map_ll = list(map(float, get_coords(GEOCODE_API_SERVER, params)))
+        coords = get_coords(params)
+        self.map_ll = list(map(float, coords))
+        self.address_lbl.setText(get_address(coords))
         self.point_coords = f'{self.map_ll[0]},{self.map_ll[1]},pm2rdl'
         self.refresh_map()
 
@@ -96,6 +105,7 @@ class MainWindow(QMainWindow):
         self.map_ll = [37.977751, 55.757718]
         self.point_coords = ''
         self.search_line.setText('')
+        self.address_lbl.setText('')
         self.refresh_map()
 
     def refresh_map(self):
