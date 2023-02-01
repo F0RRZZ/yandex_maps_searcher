@@ -28,6 +28,10 @@ def get_coords(request, parametrs=None):
     return coordinates
 
 
+def get_address():
+    pass
+
+
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -53,18 +57,23 @@ class MainWindow(QMainWindow):
         if event.key() == Qt.Key_PageUp and self.map_zoom < 17:
             self.map_zoom += 1
             self.press_delta /= 2
+            self.refresh_map()
         if event.key() == Qt.Key_PageDown and self.map_zoom > 0:
             self.map_zoom -= 1
             self.press_delta *= 2
+            self.refresh_map()
         if event.key() == Qt.Key_Up and self.map_ll[1] < 90:
             self.map_ll[1] += self.press_delta
+            self.refresh_map()
         if event.key() == Qt.Key_Down and self.map_ll[1] > -90:
             self.map_ll[1] -= self.press_delta
+            self.refresh_map()
         if event.key() == Qt.Key_Right:
             self.map_ll[0] = self.map_ll[0] + self.press_delta if self.map_ll[0] < 180 else -180
+            self.refresh_map()
         if event.key() == Qt.Key_Left:
             self.map_ll[0] = self.map_ll[0] - self.press_delta if self.map_ll[0] > -180 else 180
-        self.refresh_map()
+            self.refresh_map()
 
     def set_map_show_mode(self):
         mode = self.sender().text()
