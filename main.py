@@ -70,6 +70,7 @@ class MainWindow(QMainWindow):
         self.hyb_btn.clicked.connect(self.set_map_show_mode)
         self.search_btn.clicked.connect(self.search)
         self.reset_btn.clicked.connect(self.reset)
+        self.index_cb.stateChanged.connect(self.view_postal_code)
 
         self.refresh_map()
 
@@ -99,6 +100,9 @@ class MainWindow(QMainWindow):
         mode = self.sender().text()
         self.map_l = 'map' if mode == 'Схема' else 'sat' if mode == 'Спутник' else 'skl'
         self.refresh_map()
+
+    def view_postal_code(self):
+        self.search()
 
     def search(self):
         if not self.search_line.text():
