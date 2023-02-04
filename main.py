@@ -5,7 +5,7 @@ import requests
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
+from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QCheckBox
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from dotenv import dotenv_values
@@ -27,7 +27,7 @@ def get_coords(parametrs=None):
     return coordinates
 
 
-def get_address(coords):
+def get_address(coords, postal_code):
     params = {
         "apikey": config['API_KEY'],
         "geocode": f"{coords[0]},{coords[1]}",
@@ -35,8 +35,21 @@ def get_address(coords):
     }
     resp = requests.get(GEOCODE_API_SERVER, params=params)
     json_resp = resp.json()
-    return json_resp['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty'] \
+    address = json_resp['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty'] \
         ['GeocoderMetaData']['text']
+    if not postal_code:
+        return address
+    params = {
+        "apikey": config['API_KEY'],
+        "geocode": address,
+        "format": "json"
+    }
+    resp = requests.get(GEOCODE_API_SERVER, params=params)
+    json_resp = resp.json()
+    code = json_resp["response"]["GeoObjectCollection"]["featureMember"][0] \
+        ["GeoObject"]["metaDataProperty"]["GeocoderMetaData"]['Address'] \
+        ['postal_code']
+    return address + ', ' + code
 
 
 class MainWindow(QMainWindow):
@@ -97,7 +110,7 @@ class MainWindow(QMainWindow):
         }
         coords = get_coords(params)
         self.map_ll = list(map(float, coords))
-        self.address_lbl.setText(get_address(coords))
+        self.address_lbl.setText(get_address(coords, self.index_cb.isChecked()))
         self.point_coords = f'{self.map_ll[0]},{self.map_ll[1]},pm2rdl'
         self.refresh_map()
 
